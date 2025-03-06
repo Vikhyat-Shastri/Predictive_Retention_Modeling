@@ -2,8 +2,6 @@
 
 ## Overview
 This project focuses on predicting customer churn using machine learning models. The primary objective is to classify whether a customer is likely to churn based on various features such as monthly charges, contract duration, online security, and billing preferences. The dataset used contains 7,000+ customer records with a churn ratio of 27:73.
-
-## Why This is Relevant
 Customer churn prediction is critical for businesses looking to retain customers and optimize revenue. By identifying at-risk customers early, businesses can take proactive measures such as offering personalized promotions or improved service plans. This project demonstrates how machine learning techniques can be leveraged to analyze customer behavior and predict churn with high accuracy.
 
 ## Features
