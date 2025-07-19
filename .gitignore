@@ -7,8 +7,6 @@ __pycache__/
 *.bak
 *.tmp
 *.log
-models/*.pkl
-data/*.csv
 .env
 .ipynb_checkpoints/
 .DS_Store

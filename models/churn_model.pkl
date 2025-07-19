@@ -1,0 +1,1101 @@
+{
+    "cells": [
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-ebc7f89c",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "# Predictive Retention Modeling: Scalable Project Structure",
+                "",
+                "This notebook demonstrates customer churn analysis using a professional, scalable, and recruiter-friendly project structure.",
+                "",
+                "## Project Structure Overview",
+                "",
+                "```",
+                "Predictive_Retention_Modeling/",
+                "│",
+                "├── data/                  # Raw and processed data",
+                "├── notebooks/             # Jupyter notebooks",
+                "├── src/                   # Source code (EDA, preprocessing, training, inference)",
+                "├── models/                # Saved models",
+                "├── requirements.txt       # Python dependencies",
+                "├── README.md              # Project documentation",
+                "└── .gitignore             # Ignore unnecessary files",
+                "```",
+                "",
+                "Each step in this notebook references reusable functions from the `src/` directory for scalability and deployment."
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-7900ce81",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "## 1. Data Loading",
+                "",
+                "Use the `src/preprocess.py` module to load and clean data. Example:",
+                "",
+                "```python",
+                "from src.preprocess import load_and_clean_data",
+                "df = load_and_clean_data('data/Telco_customer_churn.csv')",
+                "```"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-48e024d3",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "import pandas as pd",
+                "import numpy as np",
+                "import matplotlib.pyplot as plt",
+                "import seaborn as sns",
+                "from sklearn import metrics",
+                "from sklearn.model_selection import train_test_split, cross_val_score, RandomizedSearchCV",
+                "from sklearn.tree import DecisionTreeClassifier",
+                "from imblearn.combine import SMOTEENN",
+                "from imblearn.over_sampling import  ADASYN",
+                "from sklearn.preprocessing import LabelEncoder",
+                "from sklearn.ensemble import RandomForestClassifier",
+                "from xgboost import XGBClassifier",
+                "from sklearn.metrics import accuracy_score, confusion_matrix, classification_report, recall_score",
+                "import pickle"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-a826230c",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df=pd.read_csv(\"Telco_customer_churn.csv\")",
+                "df.head()"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-c3c76abe",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df.shape"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-e740881f",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df.columns.values"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-0270826f",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df.info()"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-9c78d3a1",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "# printing the unique values in all the columns",
+                "",
+                "numerical_features_list = [\"tenure\", \"MonthlyCharges\", \"TotalCharges\"]",
+                "",
+                "for col in df.columns:",
+                "  if col not in numerical_features_list:",
+                "    print(col, df[col].unique())",
+                "    print(\"-\"*50)"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-c07549fa",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "print(df.isnull().sum())"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-36ea785c",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df['Churn'].value_counts()"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-f49235f4",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Therefore, this is a highly imbalanced dataset.",
+                "Also, now we are familiar with the dataset and note the changes to be made :",
+                "1. TotalCharges column must be changed to float",
+                "2. Unnecessary columns like CustomerID to be removed",
+                "3. Divide customers into bins on the basis of tenure"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-47b7c5f5",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "# Data cleaning"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-be5e6aa8",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "# Changing TotalCharges column into float",
+                "df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')",
+                "print(df.isnull().sum())"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-a25eea9d",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "# Checking the changed datatype of the column",
+                "df.info()"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-807503c1",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "# dropping the rows with null values",
+                "df.dropna(how = 'any', inplace = True)"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-ed2ede5e",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Now, we divide the customers into bins based on their tenure "
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-cb1c733c",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "# Max tenure ",
+                "print(df['tenure'].max())"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-50fbf752",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "# Group the tenure in bins of 12 months",
+                "labels = [\"{0} - {1}\".format(i, i + 11) for i in range(1, 72, 12)]",
+                "",
+                "df['tenure_group'] = pd.cut(df.tenure, range(1, 80, 12), right=False, labels=labels)"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-48d16a6e",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df['tenure_group'].value_counts()"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-29cab960",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Removing the unnecessary columns"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-5b07bf13",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "# Removing the customer_ID and tenure column",
+                "df.drop(columns=['customerID','tenure'], axis=1, inplace=True)"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-1ee5c587",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "we are done with data cleaning. Moving on to the next step"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-920cea83",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "# Exploratory Data Analysis (EDA)"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-2e39d8a0",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df.head(6)"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-7f639df2",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df.info()"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-0959a03d",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                " Firstly,we perform bivariate analysis by plotting count distribution of each ",
+                " categorical feature with respect to churn"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-6706abce",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "for i, predictor in enumerate(df.drop(columns=['Churn', 'TotalCharges', 'MonthlyCharges'])):",
+                "    plt.figure(figsize=(4, 2))  ",
+                "    sns.countplot(data=df, x=predictor, hue='Churn')",
+                "    plt.show() "
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-855db8b6",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Now, we see the effect of the numerical data ( monthly and total charges) on churn"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-5d5dfbde",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "sns.lmplot(data=df, x='MonthlyCharges', y='TotalCharges', fit_reg=False, height=4, aspect=1.7)"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-31aa67e0",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Total charges increase as monthly charges increase - as expected"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-27636ac4",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Now, we compare monthly charges and total charges for churned vs non-churned customers"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-2caf102f",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "Mth = sns.kdeplot(df.MonthlyCharges[(df[\"Churn\"] == 'No') ],",
+                "                color=\"Red\", shade = True)",
+                "Mth = sns.kdeplot(df.MonthlyCharges[(df[\"Churn\"] == 'Yes') ],",
+                "                ax =Mth, color=\"Blue\", shade= True)",
+                "Mth.legend([\"No Churn\",\"Churn\"],loc='upper right')",
+                "Mth.set_ylabel('Density')",
+                "Mth.set_xlabel('Monthly Charges')",
+                "Mth.set_title('Monthly charges by churn')"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-1015b255",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Churn is high when monthly charges are high"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-fae0e99b",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "Mth = sns.kdeplot(df.TotalCharges[(df[\"Churn\"] == 'No') ],",
+                "                color=\"Red\", shade = True)",
+                "Mth = sns.kdeplot(df.TotalCharges[(df[\"Churn\"] == 'Yes') ],",
+                "                ax =Mth, color=\"Blue\", shade= True)",
+                "Mth.legend([\"No Churn\",\"Churn\"],loc='upper right')",
+                "Mth.set_ylabel('Density')",
+                "Mth.set_xlabel('Total Charges')",
+                "Mth.set_title('Total charges by churn')"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-ccf9658c",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Here we note that there is high churn when the totalCharges are low"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-3557ddad",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "We can combine the insights from three parameters i.e. Tenure, Monthly Charges & Total Charges :- Higher Monthly Charge at lower tenure results into lower Total Charge. Hence, all these 3 factors viz **Higher Monthly Charge**,  **Lower tenure** and **Lower Total Charge** are linked to **High Churn**."
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-85d86e09",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "# Data-preprocessing"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-96e0e0b2",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "In this part , we will be preprocessing the dataset before building our model",
+                "1. Label Encoding of categorical features",
+                "2. Splitting datset into training and testing data",
+                "3. Handling imbalance (Using SMOTEENN, ADASYN)"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-21566e88",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Here, we will use label encoding which is suitable for tree models. "
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-8d860a10",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Firstly, changing the target variable 'Churn' column. "
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-37655cd8",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df[\"Churn\"] = df[\"Churn\"].replace({\"Yes\": 1, \"No\": 0})"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-bdf60108",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "print(df[\"Churn\"].value_counts())"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-4dc90649",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Now, label encoding of categorical features"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-699b58de",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "object_columns = df.select_dtypes(include=\"object\").columns"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-c11231f7",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "for column in object_columns:",
+                "  label_encoder = LabelEncoder()",
+                "  df[column] = label_encoder.fit_transform(df[column])"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-b72c5744",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df.head()"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-7d60b8e8",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "print(df['tenure_group'].dtype)"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-09530d0f",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df['tenure_group'] = df['tenure_group'].astype(str)",
+                "label_encoder = LabelEncoder()",
+                "df['tenure_group'] = label_encoder.fit_transform(df['tenure_group'])"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-637531f3",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "df.head()"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-efe2985d",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "plt.figure(figsize=(20,8))",
+                "df.corr()['Churn'].sort_values(ascending = False).plot(kind='bar')"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-f9948a72",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "**High** churn is associated with **high monthly charges**, **paperless billing** and in **senior citizens**",
+                "",
+                "**Low** churn is associated with **longer contract**, **long tenure**, **online security**, and **techsupport**",
+                "",
+                "**gender** and **PhoneService** had more or less no impact on the churn  "
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-b6eec8a3",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "plt.figure(figsize=(12,12))",
+                "sns.heatmap(df.corr(), cmap=\"Paired\")"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-f51a9c39",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Now, we split the data into training and testing"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-75ccd479",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "X = df.drop(columns=[\"Churn\"])",
+                "y = df[\"Churn\"]"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-f1d4d58a",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-6325cd21",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Applying SMOTE + ENN to handle the class imbalance"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-f637a3a9",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "sm = SMOTEENN()",
+                "X_resampled, y_resampled = sm.fit_resample(X_train,y_train)"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-4aa30262",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Applying ADASYN tohandle the class imbalance"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-548c608d",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "ada=ADASYN()",
+                "X_resampled2, y_resampled2 = ada.fit_resample(X_train, y_train)"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-b85c7f87",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "print(y_resampled.value_counts())"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-b2a8f6ca",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "print(y_resampled2.value_counts())"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-060cf341",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "# Model training and evaluation"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-5e772422",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Creating models for Random Forest, Decision trees and XG Boosting"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-7542eb66",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "dtc=DecisionTreeClassifier(random_state=42)",
+                "rfc=RandomForestClassifier(random_state=42)",
+                "xg=XGBClassifier(random_state=42)"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-5a8ca7eb",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "## Without smoteenn or adasyn ",
+                "",
+                "# Define models",
+                "models = {",
+                "    \"Decision Tree\": DecisionTreeClassifier(random_state=42),",
+                "    \"Random Forest\": RandomForestClassifier(random_state=42),",
+                "    \"XGBoost\": XGBClassifier(random_state=42)",
+                "}",
+                "",
+                "# Perform Cross-Validation",
+                "for name, model in models.items():",
+                "    scores = cross_val_score(model, X_train, y_train, cv=5, scoring='accuracy') ",
+                "    print(f\"\\n===== {name} Cross-Validation Scores =====\")",
+                "    print(\"Accuracy Scores:\", scores)",
+                "    print(\"Mean Accuracy:\", scores.mean())",
+                "    print(\"Standard Deviation:\", scores.std())  ",
+                ""
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-186ccc1f",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "# FOR SMOTENN",
+                "for name, model in models.items():",
+                "    scores = cross_val_score(model, X_resampled, y_resampled, cv=5, scoring='accuracy') ",
+                "    print(f\"\\n===== {name} Cross-Validation Scores =====\")",
+                "    print(\"Accuracy Scores:\", scores)",
+                "    print(\"Mean Accuracy:\", scores.mean())",
+                "    print(\"Standard Deviation:\", scores.std()) "
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-fb3a912c",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "# For ADASYN",
+                "for name, model in models.items():",
+                "    scores = cross_val_score(model, X_resampled2, y_resampled2, cv=5, scoring='accuracy') ",
+                "    print(f\"\\n===== {name} Cross-Validation Scores =====\")",
+                "    print(\"Accuracy Scores:\", scores)",
+                "    print(\"Mean Accuracy:\", scores.mean())",
+                "    print(\"Standard Deviation:\", scores.std()) "
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-6e3bdd44",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Now, we finally test the models on our test data. ",
+                "",
+                "NOTE that this will be an accurate measure of  the models performance since the test data is similar to real life data which has high class imbalance"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-09be2caf",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "**FOR SMOTEENN**"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-137e8fab",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "",
+                "dtc.fit(X_resampled, y_resampled)",
+                "rfc.fit(X_resampled, y_resampled)",
+                "xg.fit(X_resampled, y_resampled)",
+                "",
+                "",
+                "y_pred_dtc = dtc.predict(X_test)",
+                "y_pred_rfc = rfc.predict(X_test)",
+                "y_pred_xgb = xg.predict(X_test)",
+                "",
+                "",
+                "print(\"===== Decision Tree Performance =====\")",
+                "print(\"Accuracy:\", accuracy_score(y_test, y_pred_dtc))",
+                "print(\"Confusion Matrix:\\n\", confusion_matrix(y_test, y_pred_dtc))",
+                "print(\"Classification Report:\\n\", classification_report(y_test, y_pred_dtc))",
+                "",
+                "print(\"\\n===== Random Forest Performance =====\")",
+                "print(\"Accuracy:\", accuracy_score(y_test, y_pred_rfc))",
+                "print(\"Confusion Matrix:\\n\", confusion_matrix(y_test, y_pred_rfc))",
+                "print(\"Classification Report:\\n\", classification_report(y_test, y_pred_rfc))",
+                "",
+                "print(\"\\n===== XGBoost Performance =====\")",
+                "print(\"Accuracy:\", accuracy_score(y_test, y_pred_xgb))",
+                "print(\"Confusion Matrix:\\n\", confusion_matrix(y_test, y_pred_xgb))",
+                "print(\"Classification Report:\\n\", classification_report(y_test, y_pred_xgb))",
+                ""
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-01264078",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "xg_params = {",
+                "    'n_estimators': np.arange(50, 500, 50),",
+                "    'max_depth': np.arange(3, 15, 2),",
+                "    'learning_rate': np.linspace(0.01, 0.3, 10),",
+                "    'subsample': np.linspace(0.5, 1, 5),",
+                "    'colsample_bytree': np.linspace(0.5, 1, 5), ",
+                "    'gamma': np.linspace(0, 5, 5),",
+                "    'reg_lambda': np.logspace(-2, 2, 5), ",
+                "    'reg_alpha': np.logspace(-2, 2, 5),  ",
+                "    'min_child_weight': np.arange(1, 10, 2),  ",
+                "    'scale_pos_weight': np.linspace(1, 10, 5)  }",
+                "",
+                "",
+                "xg_random = RandomizedSearchCV(xg, xg_params, n_iter=50, cv=5, scoring='f1', n_jobs=-1, random_state=42)",
+                "xg_random.fit(X_resampled, y_resampled)",
+                "best_xg = xg_random.best_estimator_",
+                "",
+                "",
+                "rfc_params = {",
+                "    'n_estimators': np.arange(50, 500, 50),",
+                "    'max_depth': np.arange(5, 30, 5),",
+                "    'min_samples_split': np.arange(2, 10, 2),",
+                "    'min_samples_leaf': np.arange(1, 10, 2),",
+                "    'max_features': ['sqrt', 'log2']",
+                "}",
+                "",
+                "rfc_random = RandomizedSearchCV(rfc, rfc_params, n_iter=30, cv=5, scoring='f1', n_jobs=-1, random_state=42)",
+                "rfc_random.fit(X_resampled, y_resampled)",
+                "best_rfc = rfc_random.best_estimator_",
+                "",
+                "",
+                "print(\"Best XGBoost Parameters:\", xg_random.best_params_)",
+                "print(\"Best Random Forest Parameters:\", rfc_random.best_params_)",
+                "",
+                "",
+                "y_pred_xg = best_xg.predict(X_test)",
+                "y_pred_rfc = best_rfc.predict(X_test)",
+                "",
+                "print(\"\\n===== Tuned XGBoost Performance =====\")",
+                "print(\"Accuracy:\", accuracy_score(y_test, y_pred_xg))",
+                "print(\"Confusion Matrix:\\n\", confusion_matrix(y_test, y_pred_xg))",
+                "print(\"Classification Report:\\n\", classification_report(y_test, y_pred_xg))",
+                "",
+                "print(\"\\n===== Tuned Random Forest Performance =====\")",
+                "print(\"Accuracy:\", accuracy_score(y_test, y_pred_rfc))",
+                "print(\"Confusion Matrix:\\n\", confusion_matrix(y_test, y_pred_rfc))",
+                "print(\"Classification Report:\\n\", classification_report(y_test, y_pred_rfc))",
+                ""
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-a27bcd2d",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "**For ADASYN**"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-2f7d22bf",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "",
+                "dtc.fit(X_resampled2, y_resampled2)",
+                "rfc.fit(X_resampled2, y_resampled2)",
+                "xg.fit(X_resampled2, y_resampled2)",
+                "",
+                "y_pred_dtc = dtc.predict(X_test)",
+                "y_pred_rfc = rfc.predict(X_test)",
+                "y_pred_xgb = xg.predict(X_test)",
+                "",
+                "print(\"===== Decision Tree Performance =====\")",
+                "print(\"Accuracy:\", accuracy_score(y_test, y_pred_dtc))",
+                "print(\"Confusion Matrix:\\n\", confusion_matrix(y_test, y_pred_dtc))",
+                "print(\"Classification Report:\\n\", classification_report(y_test, y_pred_dtc))",
+                "",
+                "print(\"\\n===== Random Forest Performance =====\")",
+                "print(\"Accuracy:\", accuracy_score(y_test, y_pred_rfc))",
+                "print(\"Confusion Matrix:\\n\", confusion_matrix(y_test, y_pred_rfc))",
+                "print(\"Classification Report:\\n\", classification_report(y_test, y_pred_rfc))",
+                "",
+                "print(\"\\n===== XGBoost Performance =====\")",
+                "print(\"Accuracy:\", accuracy_score(y_test, y_pred_xgb))",
+                "print(\"Confusion Matrix:\\n\", confusion_matrix(y_test, y_pred_xgb))",
+                "print(\"Classification Report:\\n\", classification_report(y_test, y_pred_xgb))"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-1d081a29",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "xg_params = {",
+                "    'n_estimators': np.arange(50, 500, 50),",
+                "    'max_depth': np.arange(3, 15, 2),",
+                "    'learning_rate': np.linspace(0.01, 0.3, 10),",
+                "    'subsample': np.linspace(0.5, 1, 5),",
+                "    'colsample_bytree': np.linspace(0.5, 1, 5), ",
+                "    'gamma': np.linspace(0, 5, 5),",
+                "    'reg_lambda': np.logspace(-2, 2, 5),  ",
+                "    'reg_alpha': np.logspace(-2, 2, 5),  ",
+                "    'min_child_weight': np.arange(1, 10, 2),  ",
+                "    'scale_pos_weight': np.linspace(1, 10, 5) ",
+                "}",
+                "",
+                "xg_random = RandomizedSearchCV(xg, xg_params, n_iter=50, cv=5, scoring='f1', n_jobs=-1, random_state=42)",
+                "xg_random.fit(X_resampled2, y_resampled2)",
+                "best_xg = xg_random.best_estimator_",
+                "",
+                "rfc_params = {",
+                "    'n_estimators': np.arange(50, 500, 50),",
+                "    'max_depth': np.arange(5, 30, 5),",
+                "    'min_samples_split': np.arange(2, 10, 2),",
+                "    'min_samples_leaf': np.arange(1, 10, 2),",
+                "    'max_features': ['sqrt', 'log2']",
+                "}",
+                "",
+                "rfc_random = RandomizedSearchCV(rfc, rfc_params, n_iter=30, cv=5, scoring='f1', n_jobs=-1, random_state=42)",
+                "rfc_random.fit(X_resampled2, y_resampled2)",
+                "best_rfc = rfc_random.best_estimator_",
+                "",
+                "",
+                "print(\"Best XGBoost Parameters:\", xg_random.best_params_)",
+                "print(\"Best Random Forest Parameters:\", rfc_random.best_params_)",
+                "",
+                "",
+                "y_pred_xg = best_xg.predict(X_test)",
+                "y_pred_rfc = best_rfc.predict(X_test)",
+                "",
+                "print(\"\\n===== Tuned XGBoost Performance =====\")",
+                "print(\"Accuracy:\", accuracy_score(y_test, y_pred_xg))",
+                "print(\"Confusion Matrix:\\n\", confusion_matrix(y_test, y_pred_xg))",
+                "print(\"Classification Report:\\n\", classification_report(y_test, y_pred_xg))",
+                "",
+                "print(\"\\n===== Tuned Random Forest Performance =====\")",
+                "print(\"Accuracy:\", accuracy_score(y_test, y_pred_rfc))",
+                "print(\"Confusion Matrix:\\n\", confusion_matrix(y_test, y_pred_rfc))",
+                "print(\"Classification Report:\\n\", classification_report(y_test, y_pred_rfc))",
+                "",
+                ""
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-5565c8a6",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "We note the following key changes:",
+                "1. Random forest has proved to be the best model among the three. (slightly better than xgboost)",
+                "2. There's a tradeoff between using ADASYN and SMOTEENN : ",
+                "",
+                "ADASYN -- Better accuracy , minimizes **false positives** ( Customers predicted as churners but actually stayed)",
+                "",
+                "SMOTEENN -- Better F1 score, Minimizes **false negatives** (Customers who actually churned but were predicted as non-churners)",
+                "",
+                "",
+                "Better model depends on the business requirements:",
+                "",
+                "a. If **retention efforts are expensive**, **ADAYSN** proves to be a better model.",
+                "",
+                "b. If the **goal is to reduce customer churn**, **SMOTEENN** is a better choice."
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-a447161e",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "# Saving and loading the model"
+            ]
+        },
+        {
+            "cell_type": "markdown",
+            "id": "#VSC-de29f0eb",
+            "metadata": {
+                "language": "markdown"
+            },
+            "source": [
+                "Now, we will save the model for future reference"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-c7648051",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "model_data = {\"model\": best_rfc, \"features_names\": X.columns.tolist()}",
+                "",
+                "",
+                "with open(\"models/churn_model.pkl\", \"wb\") as f:",
+                "  pickle.dump(model_data, f)"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-92186e4d",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "with open(\"models/churn_model.pkl\", \"rb\") as f:",
+                "  model_data = pickle.load(f)",
+                "",
+                "loaded_model = model_data[\"model\"]",
+                "feature_names = model_data[\"features_names\"]"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-78718bac",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "print(loaded_model)"
+            ]
+        },
+        {
+            "cell_type": "code",
+            "id": "#VSC-5920e96c",
+            "metadata": {
+                "language": "python"
+            },
+            "source": [
+                "print(feature_names)"
+            ]
+        }
+    ]
+}
