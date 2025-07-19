@@ -1,47 +1,90 @@
-# Predictive Retention Modeling Using Behavioral Analytics
 
-## Overview
-This project focuses on predicting customer churn using machine learning models. The primary objective is to classify whether a customer is likely to churn based on various features such as monthly charges, contract duration, online security, and billing preferences. The dataset used contains 7,000+ customer records with a churn ratio of 27:73.
-Customer churn prediction is critical for businesses looking to retain customers and optimize revenue. By identifying at-risk customers early, businesses can take proactive measures such as offering personalized promotions or improved service plans. This project demonstrates how machine learning techniques can be leveraged to analyze customer behavior and predict churn with high accuracy.
+# Predictive Retention Modeling
 
-## Features
-- Data preprocessing including handling missing values, encoding categorical variables, and feature scaling.
-- Addressing class imbalance using SMOTEENN and ADASYN to improve recall and prediction stability.
-- Implementation of multiple machine learning models:
-  - Decision Tree
-  - Random Forest
-  - XGBoost
-- Performance evaluation using accuracy, precision, recall, and F1-score.
-- Model optimization for different business objectives:
-  - High-recall model (73%) to minimize false negatives and prevent customer loss.
-  - High-accuracy model (75.7%) to reduce false positives and optimize retention efforts.
+This repository provides a complete workflow for predicting customer churn using machine learning. The process includes:
+- Data preprocessing and feature engineering
+- Exploratory Data Analysis (EDA)
+- Model training and hyperparameter tuning
+- Inference and model persistence
 
-## Dataset
-The dataset consists of 7,000+ customer records with various demographic and service-related features. Churn labels indicate whether a customer has left the service.
+## Folder Structure
 
-## Installation
-To run this project, install the following dependencies:
+- `data/`: Raw dataset (`Telco_customer_churn.csv`)
+- `models/`: Trained model files (`churn_model.pkl`)
+- `notebooks/`: Jupyter notebooks for analysis
+- `src/`: Python scripts for preprocessing, EDA, training, inference, and utilities
 
+## Setup
+
+Install all required dependencies:
 ```bash
-pip install numpy pandas scikit-learn imbalanced-learn matplotlib seaborn xgboost
+pip install -r requirements.txt
+```
+Or manually:
+```bash
+pip install pandas scikit-learn matplotlib seaborn xgboost imbalanced-learn
 ```
 
 ## Usage
-Run the Jupyter Notebook to execute the churn prediction pipeline:
 
-```bash
-jupyter notebook churn_analysis.ipynb
-```
+1. **Preprocessing**: Clean and encode the data
+    ```python
+    from src.preprocess import load_and_clean
+    df = load_and_clean('data/Telco_customer_churn.csv')
+    ```
+2. **EDA**: Visualize features and correlations
+    ```python
+    from src.eda import plot_categorical_churn, plot_numerical_churn, plot_correlation
+    plot_categorical_churn(df)
+    plot_numerical_churn(df)
+    plot_correlation(df)
+    ```
+3. **Training**: Train models and tune hyperparameters
+    ```python
+    from src.train import split_and_resample, train_models, tune_xgboost, tune_rf
+    X_train, X_test, y_train, y_test, X_resampled, y_resampled, _, _ = split_and_resample(df)
+    results = train_models(X_resampled, y_resampled)
+    # Hyperparameter tuning example:
+    # best_xgb, params = tune_xgboost(X_resampled, y_resampled, XGBClassifier())
+    ```
+4. **Inference**: Load models and predict
+    ```python
+    from src.inference import load_model, predict
+    model, features = load_model('models/churn_model.pkl')
+    # predictions = predict(model, X_test)
+    ```
+5. **Utilities**: Save and load models
+    ```python
+    from src.utils import save_model, load_model
+    save_model(model, X_train.columns.tolist(), 'models/churn_model.pkl')
+    model, features = load_model('models/churn_model.pkl')
+    ```
+
+## Requirements
+
+- pandas
+- scikit-learn
+- matplotlib
+- seaborn
+- xgboost
+- imbalanced-learn
+
+## Notes
+
+- Ensure all dependencies are installed before running scripts.
+- For visualization, use the plotting functions in `src/eda.py`.
+- For hyperparameter tuning, see `src/train.py` for examples using RandomizedSearchCV.
 
 ## Results
 - The Random Forest model achieved the highest accuracy of 75.7%.
-- Exploratory Data Analysis (EDA) identified key churn factors: higher monthly charges, shorter contract duration, lack of online security, paperless billing, and senior citizen status.
+- EDA identified key churn factors: higher monthly charges, shorter contract duration, lack of online security, paperless billing, and senior citizen status.
 
 ## Future Improvements
-- Implementing deep learning models such as LSTMs or transformers for improved prediction.
-- Developing a real-time API to integrate the model with business applications.
-- Enhancing feature engineering by incorporating additional customer interaction data.
+- Implement deep learning models (LSTM, transformers) for improved prediction.
+- Develop a real-time API for business integration.
+- Enhance feature engineering with additional customer data.
 
-## Contributions
-Contributions are welcome! If you have any improvements or suggestions, feel free to fork this repository and submit a pull request.
+## License
+
+MIT
 
