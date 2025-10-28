@@ -129,7 +129,6 @@ class ModelExplainer:
         # Calculate SHAP values
         if isinstance(self.explainer, shap.TreeExplainer):
             # For tree explainer, we need transformed data
-            actual_model = self._get_model_from_pipeline(self.model)
             X_transformed = self._preprocess_data(instance)
             shap_values = self.explainer.shap_values(X_transformed)
 
@@ -262,7 +261,6 @@ class ModelExplainer:
         logger.info("Calculating SHAP values for dataset...")
 
         if isinstance(self.explainer, shap.TreeExplainer):
-            actual_model = self._get_model_from_pipeline(self.model)
             X_transformed = self._preprocess_data(X)
             shap_values = self.explainer.shap_values(X_transformed)
         else:
@@ -503,7 +501,7 @@ if __name__ == "__main__":
         pipeline = ChurnPredictionPipeline.load_model(
             "../models/churn_model_pipeline.pkl"
         )
-    except:
+    except Exception:
         pipeline = ChurnPredictionPipeline(
             model_type="lgbm", resampling_method="smoteenn"
         )

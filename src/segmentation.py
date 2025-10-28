@@ -270,7 +270,7 @@ class CustomerSegmentation:
         df_with_segments["PCA2"] = X_pca[:, 1]
 
         # Create visualization
-        fig = plt.figure(figsize=(20, 12))
+        plt.figure(figsize=(20, 12))
 
         # 1. PCA scatter plot
         ax1 = plt.subplot(2, 3, 1)

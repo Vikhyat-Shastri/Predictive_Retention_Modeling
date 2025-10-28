@@ -12,7 +12,11 @@ from sklearn.model_selection import train_test_split
 # Add src to path before imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from pipeline import ChurnPredictionPipeline, TenureGroupTransformer, FeatureEngineer
+from pipeline import (  # noqa: E402
+    ChurnPredictionPipeline,
+    TenureGroupTransformer,
+    FeatureEngineer,
+)
 
 
 @pytest.fixture

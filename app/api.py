@@ -20,9 +20,9 @@ from io import StringIO
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from pipeline import ChurnPredictionPipeline
-from segmentation import CustomerSegmentation
-from explainability import ModelExplainer
+from pipeline import ChurnPredictionPipeline  # noqa: E402
+from segmentation import CustomerSegmentation  # noqa: E402
+from explainability import ModelExplainer  # noqa: E402
 
 # Configure logging
 logging.basicConfig(
@@ -393,7 +393,7 @@ async def predict_churn(customer: CustomerData):
         if models["segmenter"] is not None:
             try:
                 segment = int(models["segmenter"].predict(input_df)[0])
-            except:
+            except Exception:
                 pass
 
         # Get risk level and recommendations
@@ -446,7 +446,7 @@ async def predict_batch(customers: List[CustomerData]):
         if models["segmenter"] is not None:
             try:
                 segments = models["segmenter"].predict(input_df)
-            except:
+            except Exception:
                 pass
 
         # Build response

@@ -13,10 +13,10 @@ import os
 # Add src to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from pipeline import ChurnPredictionPipeline
-from segmentation import CustomerSegmentation
-from explainability import ModelExplainer
-import joblib
+from pipeline import ChurnPredictionPipeline  # noqa: E402
+from segmentation import CustomerSegmentation  # noqa: E402
+from explainability import ModelExplainer  # noqa: E402
+import joblib  # noqa: E402
 
 # Page configuration
 st.set_page_config(
@@ -76,7 +76,7 @@ def load_models():
             explainer.explainer = explainer_data["explainer"]
             explainer.shap_values = explainer_data.get("shap_values")
             explainer.feature_names = explainer_data.get("feature_names")
-        except:
+        except Exception:
             explainer = ModelExplainer(pipeline.pipeline)
             explainer.create_explainer(method="tree")
 
