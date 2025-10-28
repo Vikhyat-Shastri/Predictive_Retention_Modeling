@@ -369,8 +369,8 @@ def explanation_page():
                 df = load_and_clean('data/Telco_customer_churn.csv')
                 X = df.drop('Churn', axis=1)
                 
-                # Concatenate for explanation
-                X_explain = pd.concat([X.iloc[:1], input_data], ignore_index=True)
+                # Concatenate for explanation (use encoded data)
+                X_explain = pd.concat([X.iloc[:1], input_data_encoded], ignore_index=True)
                 
                 explanation = explainer.explain_instance(X_explain, index=1)
                 
@@ -519,11 +519,22 @@ def segmentation_page():
         st.markdown('<p class="sub-header">📋 Segment Profiles</p>', unsafe_allow_html=True)
         
         profiles_display = segmenter.segment_profiles.copy()
-        profiles_display['Churn_Rate'] = profiles_display['Churn_Rate'].apply(lambda x: f"{x:.1f}%")
-        profiles_display['Size_Pct'] = profiles_display['Size_Pct'].apply(lambda x: f"{x:.1f}%")
-        profiles_display['Avg_MonthlyCharges'] = profiles_display['Avg_MonthlyCharges'].apply(lambda x: f"${x:.2f}")
-        profiles_display['Avg_TotalCharges'] = profiles_display['Avg_TotalCharges'].apply(lambda x: f"${x:.2f}")
-        profiles_display['Avg_Tenure'] = profiles_display['Avg_Tenure'].apply(lambda x: f"{x:.1f} months")
+        
+        # Safe formatting function to handle None/NaN values
+        def safe_format_pct(x):
+            return f"{x:.1f}%" if pd.notna(x) else "N/A"
+        
+        def safe_format_currency(x):
+            return f"${x:.2f}" if pd.notna(x) else "N/A"
+        
+        def safe_format_months(x):
+            return f"{x:.1f} months" if pd.notna(x) else "N/A"
+        
+        profiles_display['Churn_Rate'] = profiles_display['Churn_Rate'].apply(safe_format_pct)
+        profiles_display['Size_Pct'] = profiles_display['Size_Pct'].apply(safe_format_pct)
+        profiles_display['Avg_MonthlyCharges'] = profiles_display['Avg_MonthlyCharges'].apply(safe_format_currency)
+        profiles_display['Avg_TotalCharges'] = profiles_display['Avg_TotalCharges'].apply(safe_format_currency)
+        profiles_display['Avg_Tenure'] = profiles_display['Avg_Tenure'].apply(safe_format_months)
         
         st.dataframe(profiles_display, use_container_width=True)
         
