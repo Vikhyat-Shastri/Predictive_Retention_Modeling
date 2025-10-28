@@ -14,7 +14,6 @@ from sklearn.metrics import (
     f1_score,
     roc_auc_score,
     confusion_matrix,
-    classification_report,
 )
 
 # Add current directory to path
@@ -88,8 +87,8 @@ cm = confusion_matrix(y_test, y_pred)
 print("\nConfusion Matrix:")
 print("                Predicted")
 print("                No Churn  Churn")
-print(f"Actual No Churn    {cm[0,0]:4d}    {cm[0,1]:4d}")
-print(f"       Churn       {cm[1,0]:4d}    {cm[1,1]:4d}")
+print(f"Actual No Churn    {cm[0, 0]:4d}    {cm[0, 1]:4d}")
+print(f"       Churn       {cm[1, 0]:4d}    {cm[1, 1]:4d}")
 
 # Save the improved model
 print("\n4. Saving improved model...")

@@ -48,10 +48,6 @@ def plot_correlation(df):
     plt.show()
 
 
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-
 def plot_churn_distribution(df):
     plt.figure(figsize=(8, 6))
     sns.countplot(data=df, x="Churn")

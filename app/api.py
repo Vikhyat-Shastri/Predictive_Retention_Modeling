@@ -3,13 +3,12 @@ FastAPI REST API for Customer Churn Prediction
 Production-ready API with comprehensive endpoints
 """
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks, File, UploadFile
+from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import pandas as pd
-import numpy as np
 import joblib
 import uvicorn
 import os

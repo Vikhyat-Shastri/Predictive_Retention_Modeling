@@ -5,10 +5,8 @@ Multi-page interactive dashboard with prediction, explanation, and segmentation
 
 import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 import sys
 import os
 
@@ -19,10 +17,6 @@ from pipeline import ChurnPredictionPipeline
 from segmentation import CustomerSegmentation
 from explainability import ModelExplainer
 import joblib
-import shap
-import matplotlib.pyplot as plt
-from io import BytesIO
-import base64
 
 # Page configuration
 st.set_page_config(

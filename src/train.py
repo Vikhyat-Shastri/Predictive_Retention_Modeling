@@ -87,10 +87,6 @@ def tune_rf(X, y, base_model):
     return rfc_random.best_estimator_, rfc_random.best_params_
 
 
-from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
-
-
 def train_and_evaluate_models(X_train, y_train, X_test, y_test):
     from sklearn.metrics import (
         accuracy_score,

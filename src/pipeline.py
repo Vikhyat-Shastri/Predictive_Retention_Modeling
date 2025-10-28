@@ -8,7 +8,6 @@ import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import (
-    StandardScaler,
     RobustScaler,
     LabelEncoder,
     OneHotEncoder,
@@ -29,7 +28,7 @@ from imblearn.combine import SMOTEENN
 from imblearn.over_sampling import ADASYN
 import joblib
 import logging
-from typing import Tuple, Dict, Any
+from typing import Dict, Any
 
 # Configure logging
 logging.basicConfig(
@@ -496,7 +495,7 @@ def train_multiple_models(df: pd.DataFrame, test_size: float = 0.2) -> Dict[str,
                 "pipeline": pipeline,
             }
 
-            logger.info(f"\nTest Set Performance:")
+            logger.info("\nTest Set Performance:")
             logger.info(f"Accuracy: {test_scores['accuracy']:.4f}")
             logger.info(f"Precision: {test_scores['precision']:.4f}")
             logger.info(f"Recall: {test_scores['recall']:.4f}")
