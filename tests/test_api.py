@@ -3,7 +3,6 @@ API Tests for FastAPI Churn Prediction Endpoint
 """
 
 import pytest
-from fastapi.testclient import TestClient
 import sys
 import os
 

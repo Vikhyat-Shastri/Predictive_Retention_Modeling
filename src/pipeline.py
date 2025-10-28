@@ -64,6 +64,11 @@ class TenureGroupTransformer(BaseEstimator, TransformerMixin):
             X["tenure_group"] = self.label_encoder.transform(X["tenure_group"])
             # Drop original tenure column
             X = X.drop("tenure", axis=1)
+        
+        # Ensure we return a DataFrame
+        if not isinstance(X, pd.DataFrame):
+            X = pd.DataFrame(X)
+        
         return X
 
 
@@ -110,6 +115,10 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
             X["ChargeToServiceRatio"] = X["MonthlyCharges"] / (
                 X["ServiceUsageScore"] + 1
             )
+
+        # Ensure we return a DataFrame
+        if not isinstance(X, pd.DataFrame):
+            X = pd.DataFrame(X)
 
         return X
 
@@ -210,12 +219,32 @@ class ChurnPredictionPipeline:
     def build_pipeline(self, X: pd.DataFrame) -> Pipeline:
         """Build the complete preprocessing and modeling pipeline"""
 
-        # Identify column types
-        numerical_features = X.select_dtypes(
-            include=["float64", "int64"]
+        # Step 1: Create initial transformers that change column structure
+        initial_preprocessing = Pipeline(
+            [
+                ("tenure_transformer", TenureGroupTransformer()),
+                ("feature_engineer", FeatureEngineer()),
+            ]
+        )
+
+        # Step 2: Apply initial transformations to understand resulting columns
+        X_sample = X.copy()
+        X_transformed = initial_preprocessing.fit_transform(X_sample)
+
+        # Ensure X_transformed is a DataFrame
+        if not isinstance(X_transformed, pd.DataFrame):
+            # If it's a numpy array, convert back to DataFrame
+            X_transformed = pd.DataFrame(
+                X_transformed,
+                columns=getattr(X_transformed, "columns", X_sample.columns),
+            )
+
+        # Step 3: Identify column types AFTER transformation
+        numerical_features = X_transformed.select_dtypes(
+            include=["float64", "int64", "number"]
         ).columns.tolist()
-        categorical_features = X.select_dtypes(
-            include=["object", "category"]
+        categorical_features = X_transformed.select_dtypes(
+            include=["object", "category", "bool"]
         ).columns.tolist()
 
         # Remove target if present
@@ -227,12 +256,11 @@ class ChurnPredictionPipeline:
         logger.info(f"Numerical features: {numerical_features}")
         logger.info(f"Categorical features: {categorical_features}")
 
-        # Numerical pipeline
+        # Step 4: Build preprocessing pipelines using actual column names
         numerical_pipeline = Pipeline(
             [("imputer", SimpleImputer(strategy="median")), ("scaler", RobustScaler())]
         )
 
-        # Categorical pipeline
         categorical_pipeline = Pipeline(
             [
                 ("imputer", SimpleImputer(strategy="most_frequent")),
@@ -251,7 +279,7 @@ class ChurnPredictionPipeline:
                 ("num", numerical_pipeline, numerical_features),
                 ("cat", categorical_pipeline, categorical_features),
             ],
-            remainder="passthrough",
+            remainder="drop",
         )
 
         # Get resampling method
@@ -261,12 +289,11 @@ class ChurnPredictionPipeline:
         elif self.resampling_method == "adasyn":
             resampler = ADASYN(random_state=42)
 
-        # Build complete pipeline
+        # Step 5: Build complete pipeline with initial preprocessing separate
         if resampler:
             pipeline = ImbPipeline(
                 [
-                    ("tenure_transformer", TenureGroupTransformer()),
-                    ("feature_engineer", FeatureEngineer()),
+                    ("initial", initial_preprocessing),
                     ("preprocessor", preprocessor),
                     ("resampler", resampler),
                     ("classifier", self._get_model()),
@@ -275,12 +302,14 @@ class ChurnPredictionPipeline:
         else:
             pipeline = Pipeline(
                 [
-                    ("tenure_transformer", TenureGroupTransformer()),
-                    ("feature_engineer", FeatureEngineer()),
+                    ("initial", initial_preprocessing),
                     ("preprocessor", preprocessor),
                     ("classifier", self._get_model()),
                 ]
             )
+
+        self.pipeline = pipeline
+        return pipeline
 
         self.pipeline = pipeline
         return pipeline
@@ -308,9 +337,31 @@ class ChurnPredictionPipeline:
         # Store feature names
         self.feature_names = X.columns.tolist()
 
-        # Perform cross-validation
-        cv = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=42)
+        # Determine appropriate CV strategy based on dataset size and class distribution
+        n_samples = len(y)
+        n_splits = min(cv_folds, n_samples)
 
+        # Check class counts for stratified CV
+        try:
+            class_counts = np.bincount(np.asarray(y, dtype=int))
+            min_class_count = class_counts[class_counts > 0].min()
+        except Exception:
+            min_class_count = 0
+
+        # Use StratifiedKFold if possible, otherwise fall back to regular KFold
+        if min_class_count >= n_splits and n_splits >= 2:
+            cv = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
+            logger.info(f"Using StratifiedKFold with {n_splits} splits")
+        else:
+            from sklearn.model_selection import KFold
+
+            n_splits = max(2, min(n_splits, n_samples))
+            cv = KFold(n_splits=n_splits, shuffle=True, random_state=42)
+            logger.warning(
+                f"StratifiedKFold not possible (min_class={min_class_count}, n_splits={n_splits}). Using KFold instead."
+            )
+
+        # Perform cross-validation
         scoring_metrics = ["accuracy", "precision", "recall", "f1", "roc_auc"]
         cv_scores = {}
 

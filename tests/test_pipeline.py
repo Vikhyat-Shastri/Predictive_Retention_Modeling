@@ -9,10 +9,10 @@ from sklearn.model_selection import train_test_split
 import sys
 import os
 
+# Add src to path before imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
 
 from pipeline import ChurnPredictionPipeline, TenureGroupTransformer, FeatureEngineer
-from preprocess import load_and_clean
 
 
 @pytest.fixture
