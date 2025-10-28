@@ -54,9 +54,12 @@ class ModelExplainer:
     def _preprocess_data(self, X: pd.DataFrame):
         """Preprocess data through pipeline if needed"""
         if hasattr(self.model, 'named_steps'):
-            # It's a pipeline - transform through all steps except final classifier
+            # It's a pipeline - transform through all steps except final classifier and resampling
             X_transformed = X.copy()
             for name, transformer in self.model.steps[:-1]:
+                # Skip resampling steps (SMOTEENN, ADASYN, etc.) - they only work during training
+                if hasattr(transformer, 'fit_resample'):
+                    continue
                 X_transformed = transformer.transform(X_transformed)
             return X_transformed
         return X
@@ -375,7 +378,7 @@ class ModelExplainer:
         return importance_df
     
     def create_explanation_report(self, X: pd.DataFrame, index: int = 0, 
-                                 save_dir: str = '../models/explanations/') -> Dict[str, Any]:
+                                 save_dir: str = 'models/explanations/') -> Dict[str, Any]:
         """
         Create comprehensive explanation report for a single instance
         

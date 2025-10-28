@@ -1,46 +1,73 @@
 # .gitignore for Predictive Retention Modeling
+
+# Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-*.swp
-*.bak
-*.tmp
-*.log
-.env
-.ipynb_checkpoints/
-.DS_Store
+.Python
+*.so
+*.egg
 *.egg-info/
-build/
 dist/
-*.sqlite3
-*.db
-*.h5
-*.hdf5
-*.parquet
-*.joblib
-*.npy
-*.npz
-*.xls
-*.xlsx
-*.sav
-*.rda
-*.RData
-*.pdf
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.svg
-*.mp4
-*.webm
-*.zip
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.7z
-*.rar
-*.gz
-*.bz2
-*.xz
-*.ipynb
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+*.log
+logs/
+
+# Model files (large binary files)
+models/*.pkl
+models/*.h5
+models/*.hdf5
+models/*.joblib
+models/*.sav
+
+# Data files (keep small sample data, ignore large datasets)
+data/*.csv
+!data/Telco_customer_churn.csv
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# Pytest
+.pytest_cache/
+.tox/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json

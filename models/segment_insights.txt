@@ -1,0 +1,64 @@
+
+Segment 0 - LOW RISK
+==================================================
+Size: 1,540 customers (21.9% of total)
+Churn Rate: 7.5%
+Average Tenure: 0.0 months
+Average Monthly Charges: $21.68
+
+Profile: These are new customers with low-value service packages.
+
+Recommendations:
+- Maintain current service quality
+- Explore upselling opportunities
+- Use as testimonials/case studies
+
+
+
+Segment 1 - HIGH RISK
+==================================================
+Size: 2,742 customers (39.0% of total)
+Churn Rate: 46.1%
+Average Tenure: 0.0 months
+Average Monthly Charges: $73.73
+
+Profile: These are new customers with high-value service packages.
+
+Recommendations:
+- Implement urgent retention campaigns
+- Offer loyalty discounts or service upgrades
+- Conduct exit surveys to understand pain points
+
+
+
+Segment 2 - MODERATE RISK
+==================================================
+Size: 658 customers (9.4% of total)
+Churn Rate: 25.8%
+Average Tenure: 0.0 months
+Average Monthly Charges: $41.23
+
+Profile: These are new customers with medium-value service packages.
+
+Recommendations:
+- Monitor closely for early churn signals
+- Enhance customer engagement programs
+- Provide proactive customer support
+
+
+
+Segment 3 - LOW RISK
+==================================================
+Size: 2,092 customers (29.7% of total)
+Churn Rate: 15.3%
+Average Tenure: 0.0 months
+Average Monthly Charges: $92.25
+
+Profile: These are new customers with high-value service packages.
+
+Recommendations:
+- Maintain current service quality
+- Explore upselling opportunities
+- Use as testimonials/case studies
+
+

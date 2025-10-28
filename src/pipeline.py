@@ -68,8 +68,10 @@ class FeatureEngineer(BaseEstimator, TransformerMixin):
         X = X.copy()
         
         # Average monthly charges
-        if 'TotalCharges' in X.columns and 'MonthlyCharges' in X.columns:
-            X['AvgChargesPerMonth'] = X['TotalCharges'] / (X.get('tenure', 1).replace(0, 1))
+        if 'TotalCharges' in X.columns and 'tenure' in X.columns:
+            # Avoid division by zero: replace tenure=0 with 1
+            tenure_safe = X['tenure'].replace(0, 1)
+            X['AvgChargesPerMonth'] = X['TotalCharges'] / tenure_safe
         
         # Service usage score (count of services used)
         service_cols = ['PhoneService', 'MultipleLines', 'InternetService', 

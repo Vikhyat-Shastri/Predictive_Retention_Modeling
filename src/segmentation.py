@@ -121,7 +121,7 @@ class CustomerSegmentation:
         axes[2].grid(True)
         
         plt.tight_layout()
-        plt.savefig('../models/cluster_optimization.png', dpi=300, bbox_inches='tight')
+        plt.savefig('models/cluster_optimization.png', dpi=300, bbox_inches='tight')
         plt.close()
         
         return {
@@ -222,7 +222,7 @@ class CustomerSegmentation:
         
         return self.segment_profiles
     
-    def visualize_segments(self, df: pd.DataFrame, save_path: str = '../models/segments_visualization.png'):
+    def visualize_segments(self, df: pd.DataFrame, save_path: str = 'models/segments_visualization.png'):
         """
         Create comprehensive visualizations of customer segments
         
