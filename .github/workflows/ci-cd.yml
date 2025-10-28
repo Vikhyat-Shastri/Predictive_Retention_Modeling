@@ -72,7 +72,7 @@ jobs:
     
     - name: Run Pylint
       run: |
-        pylint src/ app/ --disable=C0103,C0114,C0115,C0116,R0913,R0914
+        pylint src/ app/ --rcfile=.pylintrc
   
   docker:
     runs-on: ubuntu-latest

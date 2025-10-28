@@ -1,0 +1,45 @@
+[MASTER]
+ignore=tests
+
+[MESSAGES CONTROL]
+disable=
+    C0103,  # invalid-name (already disabled in CI)
+    C0114,  # missing-module-docstring (already disabled in CI)
+    C0115,  # missing-class-docstring (already disabled in CI)
+    C0116,  # missing-function-docstring (already disabled in CI)
+    R0913,  # too-many-arguments (already disabled in CI)
+    R0914,  # too-many-locals (already disabled in CI)
+    R0903,  # too-few-public-methods (Pydantic models)
+    R0912,  # too-many-branches
+    R0915,  # too-many-statements
+    R1705,  # no-else-return (style preference)
+    R1716,  # chained-comparison (minor optimization)
+    R1735,  # use-dict-literal (style preference)
+    R0917,  # too-many-positional-arguments
+    R0801,  # duplicate-code (expected in similar modules)
+    W0621,  # redefined-outer-name (common in nested functions)
+    W0612,  # unused-variable (handled by flake8)
+    W0613,  # unused-argument (common in base class implementations)
+    W0718,  # broad-exception-caught (intentional in API/web layers)
+    W1203,  # logging-fstring-interpolation (acceptable for readability)
+    W1514,  # unspecified-encoding (defaults work for UTF-8 systems)
+    W0707,  # raise-missing-from (not always needed)
+    W0101,  # unreachable (handled by flake8)
+    E0401,  # import-error (false positives in venv)
+    C0209,  # consider-using-f-string (style preference)
+    C0411,  # wrong-import-order (order after sys.path modification is intentional)
+    C0413,  # wrong-import-position (imports after sys.path.append are intentional)
+    C0415,  # import-outside-toplevel (lazy imports for optional dependencies)
+    C0412,  # ungrouped-imports
+
+[FORMAT]
+max-line-length=120
+
+[BASIC]
+good-names=i,j,k,ex,e,f,df,X,y,_,lr,cv,ax,fig
+
+[DESIGN]
+max-attributes=15
+max-locals=25
+max-branches=15
+max-statements=75

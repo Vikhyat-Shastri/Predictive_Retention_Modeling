@@ -276,8 +276,6 @@ def save_trained_model(model, file_name):
     - model: the trained model to be saved
     - file_name: str, the name of the file where the model will be saved
     """
-    import pickle
-
     # Save the model using pickle
     with open(file_name, "wb") as f:
         pickle.dump(model, f)
@@ -293,8 +291,6 @@ def load_trained_model(file_name):
     Returns:
     - model: the loaded model
     """
-    import pickle
-
     # Load the model using pickle
     with open(file_name, "rb") as f:
         model = pickle.load(f)
