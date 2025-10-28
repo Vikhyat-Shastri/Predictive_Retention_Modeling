@@ -136,9 +136,11 @@ class ChurnPredictionPipeline:
             ),
             'lgbm': LGBMClassifier(
                 n_estimators=200,
-                max_depth=8,
-                learning_rate=0.1,
+                learning_rate=0.05,
+                max_depth=7,
                 num_leaves=31,
+                min_child_samples=20,
+                class_weight='balanced',
                 subsample=0.8,
                 colsample_bytree=0.8,
                 random_state=42,

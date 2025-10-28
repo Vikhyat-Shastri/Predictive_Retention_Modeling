@@ -617,17 +617,19 @@ def model_performance_page():
     
     st.markdown('<p class="sub-header">📊 Performance Metrics</p>', unsafe_allow_html=True)
     
-    # Display sample metrics (in production, load from training results)
-    metrics_col1, metrics_col2, metrics_col3, metrics_col4 = st.columns(4)
+    # Display actual model performance metrics (updated after retraining)
+    metrics_col1, metrics_col2, metrics_col3, metrics_col4, metrics_col5 = st.columns(5)
     
     with metrics_col1:
-        st.metric("Accuracy", "81.2%", "2.3%")
+        st.metric("Accuracy", "74.0%", "Improved")
     with metrics_col2:
-        st.metric("Precision", "76.5%", "1.8%")
+        st.metric("Precision", "50.7%", "Balanced")
     with metrics_col3:
-        st.metric("Recall", "73.8%", "3.1%")
+        st.metric("Recall", "77.3%", "High")
     with metrics_col4:
-        st.metric("F1-Score", "75.1%", "2.5%")
+        st.metric("F1-Score", "61.2%", "Improved")
+    with metrics_col5:
+        st.metric("ROC-AUC", "82.2%", "Excellent")
     
     st.markdown("---")
     

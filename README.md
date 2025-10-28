@@ -24,7 +24,7 @@ This is a **comprehensive, production-ready** customer churn prediction system t
 
 ## 📊 Business Impact
 
-- **Predict** customer churn with **81%+ accuracy**
+- **Predict** customer churn with **74%+ accuracy** (77% recall)
 - **Explain** predictions using SHAP values for actionable insights
 - **Segment** customers into distinct groups for targeted retention strategies
 - **Deploy** easily with Docker containers or cloud platforms
@@ -228,10 +228,9 @@ FastAPI endpoints:
 
 | Model | Accuracy | Precision | Recall | F1-Score | ROC-AUC |
 |-------|----------|-----------|--------|----------|---------|
-| **LightGBM (Best)** | 81.2% | 76.5% | 73.8% | 75.1% | 86.9% |
-| Random Forest | 80.5% | 75.2% | 72.3% | 73.7% | 85.8% |
-| XGBoost | 80.8% | 75.8% | 73.1% | 74.4% | 86.2% |
-| Ensemble | 81.5% | 77.1% | 74.2% | 75.6% | 87.3% |
+| **LightGBM (Current)** | 74.0% | 50.7% | 77.3% | 61.2% | 82.2% |
+
+**Note:** Current model is optimized for high recall (77.3%) to catch more potential churners, accepting lower precision. This is ideal for retention campaigns where missing a churner is more costly than false alarms.
 
 ## 🛠️ Technology Stack
 

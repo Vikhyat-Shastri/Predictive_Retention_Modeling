@@ -47,13 +47,13 @@ Get information about the loaded model.
   "version": "1.0.0",
   "features": ["gender", "SeniorCitizen", ...],
   "resampling_method": "smoteenn",
-  "last_trained": "2025-10-27",
+  "last_trained": "2025-10-28",
   "performance_metrics": {
-    "accuracy": 0.812,
-    "precision": 0.765,
-    "recall": 0.738,
-    "f1_score": 0.751,
-    "roc_auc": 0.869
+    "accuracy": 0.740,
+    "precision": 0.507,
+    "recall": 0.773,
+    "f1_score": 0.612,
+    "roc_auc": 0.822
   }
 }
 ```

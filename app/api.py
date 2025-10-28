@@ -270,10 +270,10 @@ async def get_model_info():
         resampling_method=models['pipeline'].resampling_method,
         last_trained="2025-10-28",
         performance_metrics={
-            "accuracy": 0.734,
-            "precision": 0.500,
-            "recall": 0.767,
-            "f1_score": 0.605,
+            "accuracy": 0.740,
+            "precision": 0.507,
+            "recall": 0.773,
+            "f1_score": 0.612,
             "roc_auc": 0.822
         }
     )
