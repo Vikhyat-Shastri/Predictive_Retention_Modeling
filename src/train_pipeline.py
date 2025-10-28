@@ -88,8 +88,8 @@ print("=" * 80)
 # Show confusion matrix
 cm = confusion_matrix(y_test, y_pred)
 print("\nConfusion Matrix:")
-print(f"                Predicted")
-print(f"                No Churn  Churn")
+print("                Predicted")
+print("                No Churn  Churn")
 print(f"Actual No Churn    {cm[0,0]:4d}    {cm[0,1]:4d}")
 print(f"       Churn       {cm[1,0]:4d}    {cm[1,1]:4d}")
 

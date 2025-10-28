@@ -266,9 +266,9 @@ def tune_hyperparameters(models, X_train, y_train):
     return best_models
 
 
-def save_model(model, file_name):
+def save_trained_model(model, file_name):
     """
-    Save the trained model to a file.
+    Save the trained model to a file (simple pickle version).
 
     Parameters:
     - model: the trained model to be saved
@@ -281,9 +281,9 @@ def save_model(model, file_name):
         pickle.dump(model, f)
 
 
-def load_model(file_name):
+def load_trained_model(file_name):
     """
-    Load a trained model from a file.
+    Load a trained model from a file (simple pickle version).
 
     Parameters:
     - file_name: str, the name of the file from which the model will be loaded
