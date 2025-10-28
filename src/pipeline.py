@@ -64,11 +64,11 @@ class TenureGroupTransformer(BaseEstimator, TransformerMixin):
             X["tenure_group"] = self.label_encoder.transform(X["tenure_group"])
             # Drop original tenure column
             X = X.drop("tenure", axis=1)
-        
+
         # Ensure we return a DataFrame
         if not isinstance(X, pd.DataFrame):
             X = pd.DataFrame(X)
-        
+
         return X
 
 
