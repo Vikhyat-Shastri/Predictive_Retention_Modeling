@@ -268,13 +268,13 @@ async def get_model_info():
         version="1.0.0",
         features=models['pipeline'].feature_names or [],
         resampling_method=models['pipeline'].resampling_method,
-        last_trained="2025-10-27",  # Update with actual date
+        last_trained="2025-10-28",
         performance_metrics={
-            "accuracy": 0.812,
-            "precision": 0.765,
-            "recall": 0.738,
-            "f1_score": 0.751,
-            "roc_auc": 0.869
+            "accuracy": 0.734,
+            "precision": 0.500,
+            "recall": 0.767,
+            "f1_score": 0.605,
+            "roc_auc": 0.822
         }
     )
 
