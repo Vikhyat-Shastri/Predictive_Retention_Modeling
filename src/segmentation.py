@@ -425,7 +425,7 @@ class CustomerSegmentation:
 
             insight = f"""
 Segment {segment} - {risk_level}
-{'='*50}
+{'=' * 50}
 Size: {size:,} customers ({size_pct:.1f}% of total)
 Churn Rate: {churn_rate:.1f}%
 Average Tenure: {avg_tenure:.1f} months

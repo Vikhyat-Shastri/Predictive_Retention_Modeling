@@ -457,9 +457,9 @@ def train_multiple_models(df: pd.DataFrame, test_size: float = 0.2) -> Dict[str,
     results = {}
 
     for name, model_type, resampling in model_configs:
-        logger.info(f"\n{'='*60}")
+        logger.info(f"\n{'=' * 60}")
         logger.info(f"Training {name}")
-        logger.info(f"{'='*60}")
+        logger.info(f"{'=' * 60}")
 
         try:
             pipeline = ChurnPredictionPipeline(

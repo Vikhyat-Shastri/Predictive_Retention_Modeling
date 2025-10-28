@@ -304,15 +304,15 @@ def prediction_page():
                 with col2:
                     st.metric(
                         label="Churn Probability",
-                        value=f"{prediction_proba[1]*100:.1f}%",
-                        delta=f"{prediction_proba[1]*100 - 50:.1f}% from baseline",
+                        value=f"{prediction_proba[1] * 100:.1f}%",
+                        delta=f"{prediction_proba[1] * 100 - 50:.1f}% from baseline",
                     )
 
                 with col3:
                     st.metric(
                         label="Retention Probability",
-                        value=f"{prediction_proba[0]*100:.1f}%",
-                        delta=f"{50 - prediction_proba[0]*100:.1f}% from baseline",
+                        value=f"{prediction_proba[0] * 100:.1f}%",
+                        delta=f"{50 - prediction_proba[0] * 100:.1f}% from baseline",
                     )
 
                 # Risk gauge
@@ -450,7 +450,7 @@ def explanation_page():
                         "Prediction", "CHURN ⚠️" if prediction == 1 else "NO CHURN ✅"
                     )
                 with col2:
-                    st.metric("Churn Probability", f"{prediction_proba[1]*100:.1f}%")
+                    st.metric("Churn Probability", f"{prediction_proba[1] * 100:.1f}%")
 
                 # Feature contributions
                 st.markdown(
@@ -583,7 +583,7 @@ def segmentation_page():
         with col2:
             st.metric("Number of Segments", segmenter.n_clusters)
         with col3:
-            st.metric("Average Churn Rate", f"{df['Churn'].mean()*100:.1f}%")
+            st.metric("Average Churn Rate", f"{df['Churn'].mean() * 100:.1f}%")
         with col4:
             st.metric("Avg Monthly Charges", f"${df['MonthlyCharges'].mean():.2f}")
 
@@ -728,9 +728,9 @@ def model_performance_page():
         st.info(
             f"""
         **Model Type:** {pipeline.model_type.upper()}
-        
+
         **Resampling Method:** {pipeline.resampling_method.upper() if pipeline.resampling_method else 'None'}
-        
+
         **Number of Features:** {len(pipeline.feature_names) if pipeline.feature_names else 'N/A'}
         """
         )
@@ -768,7 +768,7 @@ def model_performance_page():
 
     st.info(
         """
-    💡 **Note:** For detailed model training results and performance comparisons, 
+    💡 **Note:** For detailed model training results and performance comparisons,
     please refer to the training notebooks and logs in the `models/` directory.
     """
     )
@@ -795,13 +795,13 @@ def main():
     st.sidebar.markdown(
         """
     ### About
-    
+
     This application provides:
     - Real-time churn prediction
     - SHAP-based explanations
     - Customer segmentation
     - Model performance metrics
-    
+
     ### Technologies Used
     - Python
     - Scikit-learn
@@ -809,7 +809,7 @@ def main():
     - SHAP
     - Streamlit
     - Plotly
-    
+
     ### Team
     Customer Churn Prediction Project
     """
@@ -827,54 +827,54 @@ def main():
         st.markdown(
             """
         ## 🚀 Overview
-        
+
         This comprehensive machine learning system helps businesses:
         - **Predict** customer churn with high accuracy
         - **Explain** why customers are likely to leave
         - **Segment** customers into distinct groups
         - **Take action** with data-driven recommendations
-        
+
         ## 🎯 Key Features
-        
+
         ### 1. 🔮 Real-Time Prediction
         - Input customer data and get instant churn predictions
         - Risk assessment with probability scores
         - Actionable recommendations
-        
+
         ### 2. 🔍 Model Explainability (SHAP)
         - Understand which features drive predictions
         - See the impact of each customer attribute
         - Transparent, interpretable AI
-        
+
         ### 3. 👥 Customer Segmentation
         - K-Means clustering identifies customer groups
         - Analyze churn patterns by segment
         - Targeted retention strategies
-        
+
         ### 4. 📈 Performance Monitoring
         - Track model metrics
         - Validation results
         - Production-ready pipeline
-        
+
         ## 🛠️ Technology Stack
-        
+
         - **Machine Learning:** Scikit-learn, LightGBM, XGBoost
         - **Explainability:** SHAP
         - **Imbalance Handling:** SMOTEENN, ADASYN
         - **Visualization:** Plotly, Matplotlib, Seaborn
         - **Deployment:** Streamlit, FastAPI, Docker
-        
+
         ## 📊 Getting Started
-        
+
         Use the sidebar to navigate through different sections:
-        
+
         1. **Prediction**: Make churn predictions for individual customers
         2. **Explanation**: Understand what drives each prediction
         3. **Segmentation**: Explore customer segments and patterns
         4. **Performance**: View model metrics and validation results
-        
+
         ---
-        
+
         **👉 Select a page from the sidebar to begin!**
         """
         )

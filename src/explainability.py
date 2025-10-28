@@ -417,15 +417,15 @@ class ModelExplainer:
         # Create text report
         report = f"""
 CHURN PREDICTION EXPLANATION REPORT
-{'='*60}
+{'=' * 60}
 
 Instance Index: {index}
 
 PREDICTION:
 -----------
 Predicted Class: {'CHURN' if explanation['prediction'] == 1 else 'NO CHURN'}
-Churn Probability: {explanation['prediction_proba'][1]*100:.2f}%
-No-Churn Probability: {explanation['prediction_proba'][0]*100:.2f}%
+Churn Probability: {explanation['prediction_proba'][1] * 100:.2f}%
+No-Churn Probability: {explanation['prediction_proba'][0] * 100:.2f}%
 
 TOP 10 MOST INFLUENTIAL FEATURES:
 ----------------------------------

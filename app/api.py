@@ -460,7 +460,7 @@ async def predict_batch(customers: List[CustomerData]):
             risk_counts[risk_level] += 1
 
             result = PredictionResponse(
-                customer_id=f"CUST_{i+1:04d}",
+                customer_id=f"CUST_{i + 1:04d}",
                 prediction=int(pred),
                 prediction_label="Churn" if pred == 1 else "No Churn",
                 churn_probability=float(proba[1]),
