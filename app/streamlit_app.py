@@ -90,6 +90,70 @@ def load_models():
         return None, None, None
 
 
+def encode_categorical_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Encode categorical features to match training data encoding.
+    Uses LabelEncoder-compatible mappings (alphabetical order).
+    """
+    df = df.copy()
+    
+    # Binary encodings (alphabetical: Female=0, Male=1; No=0, Yes=1)
+    binary_mappings = {
+        'gender': {'Female': 0, 'Male': 1},
+        'Partner': {'No': 0, 'Yes': 1},
+        'Dependents': {'No': 0, 'Yes': 1},
+        'PhoneService': {'No': 0, 'Yes': 1},
+        'PaperlessBilling': {'No': 0, 'Yes': 1}
+    }
+    
+    # MultipleLines encoding (alphabetical)
+    multiple_lines_map = {'No': 0, 'No phone service': 1, 'Yes': 2}
+    
+    # Internet service addons (alphabetical: No=0, No internet service=1, Yes=2)
+    addon_map = {'No': 0, 'No internet service': 1, 'Yes': 2}
+    
+    # InternetService (alphabetical: DSL=0, Fiber optic=1, No=2)
+    internet_service_map = {'DSL': 0, 'Fiber optic': 1, 'No': 2}
+    
+    # Contract (alphabetical: Month-to-month=0, One year=1, Two year=2)
+    contract_map = {'Month-to-month': 0, 'One year': 1, 'Two year': 2}
+    
+    # PaymentMethod (alphabetical)
+    payment_method_map = {
+        'Bank transfer (automatic)': 0,
+        'Credit card (automatic)': 1,
+        'Electronic check': 2,
+        'Mailed check': 3
+    }
+    
+    # Apply binary mappings
+    for col, mapping in binary_mappings.items():
+        if col in df.columns:
+            df[col] = df[col].map(mapping)
+    
+    # Apply complex mappings
+    if 'MultipleLines' in df.columns:
+        df['MultipleLines'] = df['MultipleLines'].map(multiple_lines_map)
+    
+    if 'InternetService' in df.columns:
+        df['InternetService'] = df['InternetService'].map(internet_service_map)
+    
+    if 'Contract' in df.columns:
+        df['Contract'] = df['Contract'].map(contract_map)
+    
+    if 'PaymentMethod' in df.columns:
+        df['PaymentMethod'] = df['PaymentMethod'].map(payment_method_map)
+    
+    # Apply addon mappings
+    addon_cols = ['OnlineSecurity', 'OnlineBackup', 'DeviceProtection', 
+                  'TechSupport', 'StreamingTV', 'StreamingMovies']
+    for col in addon_cols:
+        if col in df.columns:
+            df[col] = df[col].map(addon_map)
+    
+    return df
+
+
 def create_input_form():
     """Create input form for customer data"""
     st.markdown('<p class="sub-header">📝 Enter Customer Information</p>', unsafe_allow_html=True)
@@ -177,9 +241,12 @@ def prediction_page():
     if predict_button:
         with st.spinner("Analyzing customer data..."):
             try:
+                # Encode categorical features
+                input_data_encoded = encode_categorical_features(input_data)
+                
                 # Make prediction
-                prediction = pipeline.predict(input_data)[0]
-                prediction_proba = pipeline.predict_proba(input_data)[0]
+                prediction = pipeline.predict(input_data_encoded)[0]
+                prediction_proba = pipeline.predict_proba(input_data_encoded)[0]
                 
                 # Display results
                 st.markdown('<p class="sub-header">📊 Prediction Results</p>', unsafe_allow_html=True)
@@ -289,9 +356,12 @@ def explanation_page():
     if explain_button:
         with st.spinner("Generating explanation..."):
             try:
+                # Encode categorical features
+                input_data_encoded = encode_categorical_features(input_data)
+                
                 # Get prediction
-                prediction = pipeline.predict(input_data)[0]
-                prediction_proba = pipeline.predict_proba(input_data)[0]
+                prediction = pipeline.predict(input_data_encoded)[0]
+                prediction_proba = pipeline.predict_proba(input_data_encoded)[0]
                 
                 # Get SHAP explanation
                 # Prepare data
