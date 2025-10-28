@@ -4,10 +4,6 @@ Retrain the model with improved LightGBM parameters
 
 import sys
 import os
-
-# Add current directory to path
-sys.path.append(os.path.dirname(__file__))
-
 from preprocess import load_and_clean
 from pipeline import ChurnPredictionPipeline
 from sklearn.model_selection import train_test_split
@@ -20,7 +16,9 @@ from sklearn.metrics import (
     confusion_matrix,
     classification_report,
 )
-import joblib
+
+# Add current directory to path
+sys.path.append(os.path.dirname(__file__))
 
 print("=" * 80)
 print("RETRAINING MODEL WITH IMPROVED PARAMETERS")
@@ -51,7 +49,7 @@ pipeline = ChurnPredictionPipeline(model_type="lgbm", resampling_method="smoteen
 # Train with cross-validation
 cv_results = pipeline.train(X_train, y_train, cv_folds=5)
 
-print(f"   Cross-validation complete")
+print("   Cross-validation complete")
 if "cv_scores" in cv_results:
     for metric in ["accuracy", "precision", "recall", "f1", "roc_auc"]:
         mean_score = cv_results["cv_scores"][metric]["mean"]

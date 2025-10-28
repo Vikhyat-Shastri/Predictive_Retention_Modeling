@@ -2,12 +2,12 @@
 Unit Tests for Churn Prediction Pipeline
 """
 
+import sys
+import os
 import pytest
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
-import sys
-import os
 
 # Add src to path before imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src"))
