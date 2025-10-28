@@ -259,7 +259,7 @@ def prediction_page():
     st.markdown("---")
 
     # Load models
-    pipeline, segmenter, explainer = load_models()
+    pipeline, _, _ = load_models()
 
     if pipeline is None:
         return
@@ -398,7 +398,7 @@ def explanation_page():
     st.markdown("Understand which factors contribute most to churn predictions")
     st.markdown("---")
 
-    pipeline, segmenter, explainer = load_models()
+    pipeline, _, explainer = load_models()
 
     if pipeline is None:
         return
@@ -408,7 +408,7 @@ def explanation_page():
 
     st.markdown("---")
 
-    col1, col2, col3 = st.columns([1, 1, 1])
+    col1, col2, _ = st.columns([1, 1, 1])
     with col2:
         explain_button = st.button(
             "🔬 Explain Prediction", use_container_width=True, type="primary"
@@ -559,7 +559,7 @@ def segmentation_page():
     st.markdown("Explore distinct customer groups and their characteristics")
     st.markdown("---")
 
-    pipeline, segmenter, explainer = load_models()
+    _, segmenter, _ = load_models()
 
     if segmenter is None:
         return
@@ -713,7 +713,7 @@ def model_performance_page():
     st.markdown("Comprehensive evaluation of model performance")
     st.markdown("---")
 
-    pipeline, segmenter, explainer = load_models()
+    pipeline, _, _ = load_models()
 
     if pipeline is None:
         return

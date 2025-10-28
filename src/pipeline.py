@@ -357,7 +357,8 @@ class ChurnPredictionPipeline:
             n_splits = max(2, min(n_splits, n_samples))
             cv = KFold(n_splits=n_splits, shuffle=True, random_state=42)
             logger.warning(
-                f"StratifiedKFold not possible (min_class={min_class_count}, n_splits={n_splits}). Using KFold instead."
+                f"StratifiedKFold not possible (min_class={min_class_count}, "
+                f"n_splits={n_splits}). Using KFold instead."
             )
 
         # Perform cross-validation

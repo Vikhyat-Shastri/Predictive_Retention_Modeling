@@ -49,10 +49,12 @@ def encode_labels(df):
     Perform label encoding on the categorical features of the DataFrame.
 
     Parameters:
-    - df: DataFrame, a pandas DataFrame containing the customer data with categorical features to be encoded
+    - df: DataFrame, a pandas DataFrame containing the customer data with
+          categorical features to be encoded
 
     Returns:
-    - df: DataFrame, the input DataFrame with label-encoded categorical features
+    - df: DataFrame, the input DataFrame with label-encoded categorical
+          features
     """
     from sklearn.preprocessing import LabelEncoder
 
